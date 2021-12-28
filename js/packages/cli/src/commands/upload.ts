@@ -352,54 +352,51 @@ export async function uploadV2({
   } else {
     try {
       await Promise.all(
-        chunks(Array.from(Array(keys.length).keys()), 1000).map(
-          async allIndexesInSlice => {
-            for (let offset = 0; offset < keys.length; offset += 1){
-              const indexes = allIndexesInSlice.slice(offset, offset + 1);
-              const onChain = indexes.filter(i => {
-                const index = keys[i];
-                return cacheContent.items[index]?.onChain || false;
-              });
-              const ind = keys[indexes[0]];
+        chunks(Array.from(Array(keys.length).keys()), 10).map(
+          async (indexes) => {
+            const onChain = indexes.filter(i => {
+              const index = keys[i];
+              return cacheContent.items[index]?.onChain || false;
+            });
+            const ind = keys[indexes[0]];
 
-              if (onChain.length != indexes.length) {
-                log.info(
-                  `Writing indices ${ind}-${keys[indexes[indexes.length - 1]]}`,
-                );
-                try {
-                  await anchorProgram.rpc.addConfigLines(
-                    ind,
-                    indexes.map(i => ({
-                      uri: cacheContent.items[keys[i]].link,
-                      name: cacheContent.items[keys[i]].name,
-                    })),
-                    {
-                      accounts: {
-                        candyMachine,
-                        authority: walletKeyPair.publicKey,
-                      },
-                      signers: [walletKeyPair],
+            if (onChain.length != indexes.length) {
+              log.info(
+                `Writing indices ${ind}-${keys[indexes[indexes.length - 1]]}`,
+              );
+              try {
+                await anchorProgram.rpc.addConfigLines(
+                  ind,
+                  indexes.map(i => ({
+                    uri: cacheContent.items[keys[i]].link,
+                    name: cacheContent.items[keys[i]].name,
+                  })),
+                  {
+                    accounts: {
+                      candyMachine,
+                      authority: walletKeyPair.publicKey,
                     },
-                  );
-                  indexes.forEach(i => {
-                    cacheContent.items[keys[i]] = {
-                      ...cacheContent.items[keys[i]],
-                      onChain: true,
-                    };
-                  });
-                  saveCache(cacheName, env, cacheContent);
-                } catch (e) {
-                  log.error(
-                    `saving config line ${ind}-${
-                      keys[indexes[indexes.length - 1]]
-                    } failed`,
-                    e,
-                  );
-                  uploadSuccessful = false;
-                }
+                    signers: [walletKeyPair],
+                  },
+                );
+                indexes.forEach(i => {
+                  cacheContent.items[keys[i]] = {
+                    ...cacheContent.items[keys[i]],
+                    onChain: true,
+                  };
+                });
+                saveCache(cacheName, env, cacheContent);
+              } catch (e) {
+                log.error(
+                  `saving config line ${ind}-${
+                    keys[indexes[indexes.length - 1]]
+                  } failed`,
+                  e,
+                );
+                uploadSuccessful = false;
               }
             }
-          },
+          }
         ),
       );
     } catch (e) {
@@ -555,55 +552,49 @@ async function writeIndices({
   const keys = Object.keys(cache.items);
   try {
     await Promise.all(
-      chunks(Array.from(Array(keys.length).keys()), 1000).map(
-        async allIndexesInSlice => {
-          for (let offset = 0; offset < keys.length; offset += 1){
-            const indexes = allIndexesInSlice.slice(offset, offset + 1);
-            const onChain = indexes.filter(i => {
-              const index = keys[i];
-              return cache.items[index]?.onChain || false;
-            });
-            const ind = keys[indexes[0]];
+      chunks(Array.from(Array(keys.length).keys()), 10).map(async (indexes) => {
+        const onChain = indexes.filter(i => {
+          const index = keys[i];
+          return cache.items[index]?.onChain || false;
+        });
+        const ind = keys[indexes[0]];
 
-            if (onChain.length != indexes.length) {
-              log.info(
-                `Writing indices ${ind}-${keys[indexes[indexes.length - 1]]}`,
-              );
-              try {
-                await anchorProgram.rpc.addConfigLines(
-                  ind,
-                  indexes.map(i => ({
-                    uri: cache.items[keys[i]].link,
-                    name: cache.items[keys[i]].name,
-                  })),
-                  {
-                    accounts: {
-                      config,
-                      authority: walletKeyPair.publicKey,
-                    },
-                    signers: [walletKeyPair],
-                  },
-                );
-                indexes.forEach(i => {
-                  cache.items[keys[i]] = {
-                    ...cache.items[keys[i]],
-                    onChain: true,
-                  };
-                });
-                saveCache(cacheName, env, cache);
-              } catch (err) {
-                log.error(
-                  `Saving config line ${ind}-${
-                    keys[indexes[indexes.length - 1]]
-                  } failed`,
-                  err,
-                );
-              }
-            }
+        if (onChain.length != indexes.length) {
+          log.info(
+            `Writing indices ${ind}-${keys[indexes[indexes.length - 1]]}`,
+          );
+          try {
+            await anchorProgram.rpc.addConfigLines(
+              ind,
+              indexes.map(i => ({
+                uri: cache.items[keys[i]].link,
+                name: cache.items[keys[i]].name,
+              })),
+              {
+                accounts: {
+                  config,
+                  authority: walletKeyPair.publicKey,
+                },
+                signers: [walletKeyPair],
+              },
+            );
+            indexes.forEach(i => {
+              cache.items[keys[i]] = {
+                ...cache.items[keys[i]],
+                onChain: true,
+              };
+            });
+            saveCache(cacheName, env, cache);
+          } catch (err) {
+            log.error(
+              `Saving config line ${ind}-${
+                keys[indexes[indexes.length - 1]]
+              } failed`,
+              err,
+            );
           }
-        },
-      ),
-    );
+        }
+    }))
   } catch (e) {
     log.error(e);
   } finally {
