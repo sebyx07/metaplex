@@ -552,7 +552,7 @@ async function writeIndices({
   const keys = Object.keys(cache.items);
   try {
     await Promise.all(
-      chunks(Array.from(Array(keys.length).keys()), 10).map(async (indexes) => {
+      chunks(Array.from(Array(keys.length).keys()), 5).map(async (indexes) => {
         const onChain = indexes.filter(i => {
           const index = keys[i];
           return cache.items[index]?.onChain || false;
