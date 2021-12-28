@@ -354,12 +354,8 @@ export async function uploadV2({
       await Promise.all(
         chunks(Array.from(Array(keys.length).keys()), 1000).map(
           async allIndexesInSlice => {
-            for (
-              let offset = 0;
-              offset < allIndexesInSlice.length;
-              offset += 5
-            ) {
-              const indexes = allIndexesInSlice.slice(offset, offset + 10);
+            for (let offset = 0; offset < keys.length; offset += 1){
+              const indexes = allIndexesInSlice.slice(offset, offset + 1);
               const onChain = indexes.filter(i => {
                 const index = keys[i];
                 return cacheContent.items[index]?.onChain || false;
@@ -561,12 +557,8 @@ async function writeIndices({
     await Promise.all(
       chunks(Array.from(Array(keys.length).keys()), 1000).map(
         async allIndexesInSlice => {
-          for (
-            let offset = 0;
-            offset < allIndexesInSlice.length;
-            offset += 5
-          ) {
-            const indexes = allIndexesInSlice.slice(offset, offset + 10);
+          for (let offset = 0; offset < keys.length; offset += 1){
+            const indexes = allIndexesInSlice.slice(offset, offset + 1);
             const onChain = indexes.filter(i => {
               const index = keys[i];
               return cache.items[index]?.onChain || false;
