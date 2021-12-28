@@ -20,6 +20,7 @@ import { ipfsCreds, ipfsUpload } from '../helpers/upload/ipfs';
 import { StorageType } from '../helpers/storage-type';
 import { AssetKey } from '../types';
 import { chunks } from '../helpers/various';
+import urlUpload from '../helpers/upload/url';
 
 export async function uploadV2({
   files,
@@ -305,6 +306,11 @@ export async function uploadV2({
                   [link, imageLink] = await awsUpload(
                     awsS3Bucket,
                     image,
+                    manifestBuffer,
+                  );
+                  break;
+                case StorageType.Url:
+                  [link, imageLink] = urlUpload(
                     manifestBuffer,
                   );
                   break;
@@ -777,6 +783,11 @@ export async function upload({
                     [link, imageLink] = await awsUpload(
                       awsS3Bucket,
                       image,
+                      manifestBuffer,
+                    );
+                    break;
+                  case StorageType.Url:
+                    [link, imageLink] = urlUpload(
                       manifestBuffer,
                     );
                     break;

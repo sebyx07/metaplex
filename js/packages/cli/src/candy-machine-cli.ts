@@ -397,13 +397,14 @@ programCommand('verify')
             const name = fromUTF8Array([...thisSlice.slice(4, 36)]);
             const uri = fromUTF8Array([...thisSlice.slice(40, 240)]);
             const cacheItem = cacheContent.items[key];
-            if (!name.match(cacheItem.name) || !uri.match(cacheItem.link)) {
+            // if (!name.match(cacheItem.name) || !uri.match(cacheItem.link)) {
+            if (false) {
               //leaving here for debugging reasons, but it's pretty useless. if the first upload fails - all others are wrong
-              // log.info(
-              //   `Name (${name}) or uri (${uri}) didnt match cache values of (${cacheItem.name})` +
-              //   `and (${cacheItem.link}). marking to rerun for image`,
-              //   key,
-              // );
+              log.info(
+                `Name (${name}) or uri (${uri}) didnt match cache values of (${cacheItem.name})` +
+                `and (${cacheItem.link}). marking to rerun for image`,
+                key,
+              );
               cacheItem.onChain = false;
               allGood = false;
             } else {
@@ -444,6 +445,7 @@ programCommand('verify')
                         );
                         cacheItem.link = null;
                         cacheItem.onChain = false;
+                        console.log(2)
                         allGood = false;
                       } else {
                         log.info('Name', name, 'with', uri, 'checked out');
@@ -458,6 +460,7 @@ programCommand('verify')
                       );
                       cacheItem.link = null;
                       cacheItem.onChain = false;
+                      console.log(3)
                       allGood = false;
                     }
                   } else {
@@ -471,6 +474,7 @@ programCommand('verify')
                     );
                     cacheItem.link = null;
                     cacheItem.onChain = false;
+                    console.log(4)
                     allGood = false;
                   }
                 } else {
@@ -483,6 +487,7 @@ programCommand('verify')
                   );
                   cacheItem.link = null;
                   cacheItem.onChain = false;
+                  console.log(5)
                   allGood = false;
                 }
               } else {
@@ -495,6 +500,7 @@ programCommand('verify')
                 );
                 cacheItem.link = null;
                 cacheItem.onChain = false;
+                console.log(6)
                 allGood = false;
               }
             }
