@@ -357,7 +357,7 @@ export async function uploadV2({
             for (
               let offset = 0;
               offset < allIndexesInSlice.length;
-              offset += 10
+              offset += 5
             ) {
               const indexes = allIndexesInSlice.slice(offset, offset + 10);
               const onChain = indexes.filter(i => {
@@ -564,7 +564,7 @@ async function writeIndices({
           for (
             let offset = 0;
             offset < allIndexesInSlice.length;
-            offset += 10
+            offset += 5
           ) {
             const indexes = allIndexesInSlice.slice(offset, offset + 10);
             const onChain = indexes.filter(i => {
